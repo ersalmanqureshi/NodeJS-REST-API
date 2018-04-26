@@ -1,6 +1,7 @@
 const express = require("express")
 const app = express()
 const morgan = require("morgan")
+const mysql = require("mysql")
 
 app.use(morgan("combined"))
 
@@ -20,4 +21,37 @@ app.get("/users", (req, res) => {
     const user2 = {firstName: "Sharukh", lastName: "Qureshi"}
     res.json([user1, user2])
     //res.send("Hello Nodemon")
+})
+
+app.get("/user/:id", (req, res) => {
+    console.log("Fetching user with id:", req.params.id)
+
+    const connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        database: 'isalman_mysql_db'
+    })
+
+    const queryString = "SELECT * FROM users WHERE id = ?"
+
+    connection.query(queryString, [req.params.id] , (err, results, fields) => {
+
+        if (err) {
+            console.log("Failed to search for user: ", err);
+            res.sendStatus(500)
+            return
+
+            //throw err
+        }
+
+        console.log("Fetch users successfully");
+
+        var users = results.map((result) => {
+            return { firstName: result.first_name, lastName: result.last_name}
+        })
+
+        res.json(users)  
+    })
+
+    //res.end()
 })
