@@ -3,11 +3,18 @@ const app = express()
 const morgan = require("morgan")
 const mysql = require("mysql")
 
-app.use(morgan("combined"))
+app.use(morgan("short"))
+
+app.use(express.static('./public'))
 
 //ping server on localhost:3003
 app.listen("3003", () => {
     console.log("Server is up and listening 3003");
+})
+
+app.post("/user_create", (req, res) => {
+    console.log("Trying to create a new user");
+    res.end()
 })
 
 app.get("/", (req, res) => {
@@ -16,11 +23,29 @@ app.get("/", (req, res) => {
 })
 
 app.get("/users", (req, res) => {
-    console.log("Nodemon")
-    var user1 = {firstName: "Salman", lastName: "Qureshi"}
-    const user2 = {firstName: "Sharukh", lastName: "Qureshi"}
-    res.json([user1, user2])
-    //res.send("Hello Nodemon")
+
+    const connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        database: 'isalman_mysql_db'
+    })
+
+    const queryString = "SELECT * FROM users"
+
+    connection.query(queryString, (err, results, fields) => {
+
+        if (err) {
+            console.log("Failed to search for user: ", err);
+            res.sendStatus(500)
+            return
+
+            //throw err
+        }
+
+        console.log("Fetch users successfully");
+
+        res.json(results)  
+    })
 })
 
 app.get("/user/:id", (req, res) => {
@@ -32,9 +57,10 @@ app.get("/user/:id", (req, res) => {
         database: 'isalman_mysql_db'
     })
 
+    const userId = req.params.id
     const queryString = "SELECT * FROM users WHERE id = ?"
 
-    connection.query(queryString, [req.params.id] , (err, results, fields) => {
+    connection.query(queryString, [userId] , (err, results, fields) => {
 
         if (err) {
             console.log("Failed to search for user: ", err);
