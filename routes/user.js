@@ -2,11 +2,13 @@ const express = require("express")
 const mysql = require("mysql")
 const router = express.Router()
 
+//Use Heroku config file to fill up this information
 const pool = mysql.createPool({
     connectionLimit: 10,
-    host: 'localhost',
-    user: 'root',
-    database: 'isalman_mysql_db'
+    host: 'XXXXXXX',
+    user: 'XXXXXXX',
+    password: 'XXXXXXXXX',
+    database: 'XXXXXXXXX'
 })
 
 function getConnection() {
