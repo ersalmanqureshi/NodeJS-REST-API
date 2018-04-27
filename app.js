@@ -14,13 +14,14 @@ app.use(morgan("short"))
 
 app.use(express.static('./public'))
 
-//ping server on localhost:3003
-app.listen("3003", () => {
-    console.log("Server is up and listening 3003");
-})
+const PORT = process.env.PORT || 3003
 
+//ping server on localhost:3003
+app.listen(PORT, () => {
+    console.log("Server is up and listening on: " + PORT);
+})
 
 app.get("/", (req, res) => {
     console.log("Responding to route");
-    res.send("Hello from root")
+    res.send("Hello from Root")
 })
